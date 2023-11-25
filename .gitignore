@@ -72,3 +72,15 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Beyond github template
+
+# Contents
+.idea/*
+Content/*
+Plugins/*
+
+
+# Executable Packages
+Windows/*
+Android_ASTC/*
