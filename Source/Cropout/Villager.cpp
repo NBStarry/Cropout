@@ -37,11 +37,14 @@ void AVillager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 // Generate a random name for a villager
 FString AVillager::GenerateRandomName()
 {
-	static TArray<FString> NameList = {TEXT("John"), TEXT("Jane"), TEXT("Bob"), TEXT("Alice"), TEXT("Starry")};
-	const int RandomIndex = FMath::RandRange(0, NameList.Num() - 1);
+	// // TODO: 每次重新开始游戏时重置列表
+	// static TArray<FString> NameList = {TEXT("John"), TEXT("Jane"), TEXT("Bob"), TEXT("Alice"), TEXT("Starry")};
+	// const int RandomIndex = FMath::RandRange(0, NameList.Num() - 1);
+	//
+	// FString RandomName = NameList[RandomIndex];
+	// NameList.RemoveAt(RandomIndex);
+	//
+	// return RandomName;
 
-	FString RandomName = NameList[RandomIndex];
-	NameList.RemoveAt(RandomIndex);
-	
-	return NameList[RandomIndex];
+	return TEXT("John");
 }
