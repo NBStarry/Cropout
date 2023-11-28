@@ -80,7 +80,9 @@ DerivedDataCache/*
 Content/*
 Plugins/*
 
-
 # Executable Packages
 Windows/*
 Android_ASTC/*
+
+# Logs
+Cropout.txt
