@@ -4,9 +4,11 @@
 #include "Villager.h"
 
 #include "AIController.h"
+#include "MainGameInstance.h"
 #include "AI/NavigationSystemBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/DecalComponent.h"
+#include "NameList.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -15,15 +17,8 @@ AVillager::AVillager()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	Name = GenerateRandomName();
-	UE_LOG(LogTemp, Warning, TEXT("Name: %s"), *Name);
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	// static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Meshes/SKM_Villager.SKM_Villager'"));
-	// if(SkeletalMeshAsset.Succeeded())
-	// {
-	// 	SkeletalMeshComponent->SetSkeletalMesh(SkeletalMeshAsset.Object);
-	// }
 	Tool = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tool"));
 	Hat = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hat"));
 	Hair = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hair"));
@@ -44,6 +39,8 @@ AVillager::AVillager()
 	Quantity = 0;
 	NewJob = TEXT("Idle");
 	OldJob = TEXT("Idle");
+
+
 }
 
 void AVillager::BeginPlay()
@@ -55,22 +52,35 @@ void AVillager::BeginPlay()
 
 
 // Generate a random name for a villager
-FString AVillager::GenerateRandomName()
+FString AVillager::GenerateRandomName() const
 {
-	// // TODO: 每次重新开始游戏时重置列表
-	// static TArray<FString> NameList = {TEXT("John"), TEXT("Jane"), TEXT("Bob"), TEXT("Alice"), TEXT("Starry")};
-	// const int RandomIndex = FMath::RandRange(0, NameList.Num() - 1);
-	//
-	// FString RandomName = NameList[RandomIndex];
-	// NameList.RemoveAt(RandomIndex);
-	//
-	// return RandomName;
+	// // TODO: 检查重复姓名，重复则重新生成
+	FString NewName = TEXT("John");
+	if(NameTable != nullptr)
+	{
+		TArray<FName> RowNames = NameTable->GetRowNames();
+		const int RandomIndex1 = FMath::RandRange(0, RowNames.Num() - 1);
+		const int RandomIndex2 = FMath::RandRange(0, RowNames.Num() - 1);
+		const FName RandomFirstName = RowNames[RandomIndex1];
+		const FName RandomLastName = RowNames[RandomIndex2];
+		const FString ContextString(TEXT("GENERAL"));
 
-	return TEXT("John");
+		const FNameList *FirstRow = NameTable->FindRow<FNameList>(RandomFirstName, ContextString);
+		const FNameList *LastRow = NameTable->FindRow<FNameList>(RandomLastName, ContextString);
+		if(FirstRow != nullptr)
+		{
+			NewName = FString::Printf(TEXT("%s %s"), *FirstRow->FirstName, *LastRow->LastName);
+		}
+	}
+	return NewName;
 }
 
-void AVillager::InitializeVillager() const
+void AVillager::InitializeVillager()
 {
+	NameTable = Cast<UMainGameInstance>(GetGameInstance())->NameTable;
+	Name = GenerateRandomName();
+	UE_LOG(LogTemp, Warning, TEXT("Name: %s"), *Name);
+	
 	Tool->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
 	Hat->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "headSocket");
 }
@@ -90,7 +100,6 @@ void AVillager::StopJob()
 
 	CurrentTime = FDateTime::Now();
 	const FString StopJobMessage = FString::Printf(TEXT("%s: %s has finished %s!\n"), *CurrentTime.ToString(), *Name, *OldJob.ToString());
-	// FFileHelper::SaveStringToFile(StopJobMessage, *GameLogPath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
 	WriteInfoToFile(GameLogPath, StopJobMessage);
 	OldJob = NewJob;
 }

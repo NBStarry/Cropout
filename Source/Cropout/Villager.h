@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/Pawn.h"
+#include "Engine/DataTable.h"
 #include "Villager.generated.h"
 
 UCLASS()
@@ -48,12 +49,15 @@ protected:
 	FDateTime CurrentTime;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString GameLogPath = FPaths::ProjectDir() + TEXT("Cropout.txt");
-
-	void InitializeVillager() const;
+	
+	UPROPERTY()
+	UDataTable *NameTable;
+	
+	void InitializeVillager();
 
 public:	
 	UFUNCTION(BlueprintCallable, Category = "Villager")
-	static FString GenerateRandomName();
+	FString GenerateRandomName() const;
 	UFUNCTION(BlueprintCallable)
 	void StopJob();
 	UFUNCTION(BlueprintCallable)
