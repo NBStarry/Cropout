@@ -4,7 +4,7 @@
 #include "Villager.h"
 
 #include "AIController.h"
-#include "MainGameInstance.h"
+#include "GameMode/MainGameInstance.h"
 #include "AI/NavigationSystemBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/DecalComponent.h"

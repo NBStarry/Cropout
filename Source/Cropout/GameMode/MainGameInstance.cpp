@@ -7,5 +7,5 @@ void UMainGameInstance::Init()
 {
 	Super::Init();
 	
-	NameTable = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/Blueprint/Villagers/NameList.NameList'"));
+	NameTable = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/Blueprint/Villagers/NameTable.NameTable'"));
 }
